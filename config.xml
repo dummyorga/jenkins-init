@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson>
+  <disabledAdministrativeMonitors/>
+  <version>1.0</version>
+  <numExecutors>2</numExecutors>
+  <mode>NORMAL</mode>
+  <useSecurity>true</useSecurity>
+  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:diydevops</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:diydevops</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:diydevops</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:diydevops</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:diydevops</permission>
+    <permission>hudson.model.Computer.Build:diydevops</permission>
+    <permission>hudson.model.Computer.Configure:diydevops</permission>
+    <permission>hudson.model.Computer.Connect:diydevops</permission>
+    <permission>hudson.model.Computer.Create:diydevops</permission>
+    <permission>hudson.model.Computer.Delete:diydevops</permission>
+    <permission>hudson.model.Computer.Disconnect:diydevops</permission>
+    <permission>hudson.model.Hudson.Administer:diydevops</permission>
+    <permission>hudson.model.Hudson.Administer:tkaefer</permission>
+    <permission>hudson.model.Hudson.ConfigureUpdateCenter:diydevops</permission>
+    <permission>hudson.model.Hudson.Read:diydevops</permission>
+    <permission>hudson.model.Hudson.RunScripts:diydevops</permission>
+    <permission>hudson.model.Hudson.UploadPlugins:diydevops</permission>
+    <permission>hudson.model.Item.Build:diydevops</permission>
+    <permission>hudson.model.Item.Cancel:diydevops</permission>
+    <permission>hudson.model.Item.Configure:diydevops</permission>
+    <permission>hudson.model.Item.Create:diydevops</permission>
+    <permission>hudson.model.Item.Delete:diydevops</permission>
+    <permission>hudson.model.Item.Discover:diydevops</permission>
+    <permission>hudson.model.Item.Read:diydevops</permission>
+    <permission>hudson.model.Item.Workspace:diydevops</permission>
+    <permission>hudson.model.Run.Delete:diydevops</permission>
+    <permission>hudson.model.Run.Replay:diydevops</permission>
+    <permission>hudson.model.Run.Update:diydevops</permission>
+    <permission>hudson.model.View.Configure:diydevops</permission>
+    <permission>hudson.model.View.Create:diydevops</permission>
+    <permission>hudson.model.View.Delete:diydevops</permission>
+    <permission>hudson.model.View.Read:diydevops</permission>
+    <permission>hudson.scm.SCM.Tag:diydevops</permission>
+  </authorizationStrategy>
+  <securityRealm class="hudson.security.LDAPSecurityRealm" plugin="ldap@1.12">
+    <server>ldaps://ldap.1and1.org</server>
+    <rootDN>ou=diyjenkins,ou=ims_service,o=1und1,c=DE</rootDN>
+    <inhibitInferRootDN>false</inhibitInferRootDN>
+    <userSearchBase>ou=users</userSearchBase>
+    <userSearch>uid={0}</userSearch>
+    <groupSearchBase>ou=roles</groupSearchBase>
+    <groupSearchFilter>(&amp; (cn={0}) (objectclass=organizationalUnit) )</groupSearchFilter>
+    <groupMembershipStrategy class="jenkins.security.plugins.ldap.FromGroupSearchLDAPGroupMembershipStrategy">
+      <filter>(| (member=uid={1}) (submember=uid={1}) )</filter>
+    </groupMembershipStrategy>
+    <managerDN>uid=diyjenkins,ou=accounts,ou=ims_service,o=1und1,c=DE</managerDN>
+    <managerPasswordSecret>PiCsNCeRUDQtEPiBt3kfCCzXi0YacGnCR1KoVHsYBGY=</managerPasswordSecret>
+    <disableMailAddressResolver>false</disableMailAddressResolver>
+    <cache>
+      <size>100</size>
+      <ttl>300</ttl>
+    </cache>
+    <displayNameAttributeName>displayname</displayNameAttributeName>
+    <mailAddressAttributeName>mail</mailAddressAttributeName>
+    <userIdStrategy class="jenkins.model.IdStrategy$CaseInsensitive"/>
+    <groupIdStrategy class="jenkins.model.IdStrategy$CaseInsensitive"/>
+  </securityRealm>
+  <disableRememberMe>false</disableRememberMe>
+  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
+  <workspaceDir>${JENKINS_HOME}/workspace/${ITEM_FULLNAME}</workspaceDir>
+  <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
+  <jdks/>
+  <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+  <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
+  <clouds/>
+  <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
+  <views>
+    <hudson.model.AllView>
+      <owner class="hudson" reference="../../.."/>
+      <name>All</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+    </hudson.model.AllView>
+  </views>
+  <primaryView>All</primaryView>
+  <slaveAgentPort>50000</slaveAgentPort>
+  <label></label>
+  <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+    <excludeClientIPFromCrumb>false</excludeClientIPFromCrumb>
+  </crumbIssuer>
+  <nodeProperties/>
+  <globalNodeProperties/>
+</hudson>

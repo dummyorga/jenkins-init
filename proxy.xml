@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<proxy>
+  <name>itproxy.1and1.org</name>
+  <port>3128</port>
+  <noProxyHost>localhost
+127.0.0.1
+*.sandbox.lan
+*.petsi.lan
+*.server.lan
+*.cinetic.de
+*.schlund.de
+/var/run/docker.sock</noProxyHost>
+  <secretPassword>NrohTDaVAiKe7dGQvof7MQ==</secretPassword>
+  <testUrl>http://www.google.de</testUrl>
+</proxy>
