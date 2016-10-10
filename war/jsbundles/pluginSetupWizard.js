@@ -1786,7 +1786,7 @@ function execCallback(callback, theWindow) {
             callback.call(callback, theWindow);                
         } catch (e) {
             console.log("Error invoking window-handle callback.");
-            console.log(e.stack);
+            console.log(e);
         }
     }
 }
@@ -1826,7 +1826,7 @@ exports.getWindow = function(callback, timeout) {
         }
         waitForWindow(callback);
 	} else {
-		throw new Error("No 'window' available. Consider providing a 'callback' and receiving the 'window' async when available. Typically, this should only be the case in a test environment.");
+		throw "No 'window' available. Consider providing a 'callback' and receiving the 'window' async when available. Typically, this should only be the case in a test environment.";
 	}
 }
 
@@ -2058,8 +2058,8 @@ exports.completeInstall = function(handler) {
 /**
  * Indicates there is a restart required to complete plugin installations
  */
-exports.getRestartStatus = function(handler) {
-	jenkins.get('/setupWizard/restartStatus', function(response) {
+exports.isRestartRequired = function(handler) {
+	jenkins.get('/updateCenter/api/json?tree=restartRequiredForCompletion', function(response) {
 		handler.call({ isError: false }, response.data);
 	}, {
 		timeout: pluginManagerErrorTimeoutMillis,
@@ -2582,13 +2582,7 @@ var createPluginSetupWizard = function(appendTarget) {
 	var setupFirstUser = function() {
 		setPanel(firstUserPanel, {}, enableButtonsAfterFrameLoad);
 	};
-
-	var showSetupCompletePanel = function(messages) {
-		pluginManager.getRestartStatus(function(restartStatus) {
-			setPanel(setupCompletePanel, $.extend(restartStatus, messages));
-		});
-	};
-
+	
 	// used to handle displays based on current Jenkins install state
 	var stateHandlers = {
 		DEFAULT: function() {
@@ -2597,8 +2591,8 @@ var createPluginSetupWizard = function(appendTarget) {
 			$('.install-recommended').focus();
 		},
 		CREATE_ADMIN_USER: function() { setupFirstUser(); },
-		RUNNING: function() { showSetupCompletePanel(); },
-		INITIAL_SETUP_COMPLETED: function() { showSetupCompletePanel(); },
+		RUNNING: function() { setPanel(setupCompletePanel); },
+		INITIAL_SETUP_COMPLETED: function() { setPanel(setupCompletePanel); },
 		INITIAL_PLUGINS_INSTALLING: function() { showInstallProgress(); }
 	};
 	var showStatePanel = function(state) {
@@ -3049,7 +3043,7 @@ var createPluginSetupWizard = function(appendTarget) {
 
 	var skipFirstUser = function() {
 		$('button').prop({disabled:true});
-		showSetupCompletePanel({message: translations.installWizard_firstUserSkippedMessage});
+		setPanel(setupCompletePanel, {message: translations.installWizard_firstUserSkippedMessage});
 	};
 	
 	// call to setup the proxy
@@ -3105,14 +3099,10 @@ var createPluginSetupWizard = function(appendTarget) {
 			console.log('Waiting for Jenkins to come back online...');
 			console.log('-------------------');
 			var pingUntilRestarted = function() {
-				pluginManager.getRestartStatus(function(restartStatus) {
-					if(this.isError || restartStatus.restartRequired) {
-						if (this.isError || restartStatus.restartSupported) {
-							console.log('Waiting...');
-							setTimeout(pingUntilRestarted, 1000);
-						} else if(!restartStatus.restartSupported) {
-							throw new Error(translations.installWizard_error_restartNotSupported);
-						}
+				pluginManager.isRestartRequired(function(isRequired) {
+					if(this.isError || isRequired) {
+						console.log('Waiting...');
+						setTimeout(pingUntilRestarted, 1000);
 					}
 					else {
 						jenkins.goTo('/');
@@ -3201,9 +3191,10 @@ var createPluginSetupWizard = function(appendTarget) {
 	}
 	
 	var showInitialSetupWizard = function() {
-		// check for connectivity to the configured default update site
-		/* globals defaultUpdateSiteId: true */
-		jenkins.testConnectivity(defaultUpdateSiteId, handleGenericError(function(isConnected, isFatal, errorMessage) {
+		// check for connectivity
+		//TODO: make the Update Center ID configurable
+		var siteId = 'default';
+		jenkins.testConnectivity(siteId, handleGenericError(function(isConnected, isFatal, errorMessage) {
 			if(!isConnected) {
 				if (isFatal) { // We cannot continue, show error
 					setPanel(errorPanel, { errorMessage: 'Default update site connectivity check failed with fatal error: ' + errorMessage + '. If you see this issue for the custom Jenkins WAR bundle, consider setting the correct value of the hudson.model.UpdateCenter.defaultUpdateSiteId system property (requires Jenkins restart). Otherwise please create a bug in Jenkins JIRA.' });
@@ -3446,11 +3437,9 @@ module.exports = HandlebarsCompiler.template({"1":function(depth0,helpers,partia
     + alias2(alias3(((stack1 = (depth0 != null ? depth0.plugin : depth0)) != null ? stack1.title : stack1), depth0))
     + "\n        <a href=\""
     + alias2(alias3(((stack1 = (depth0 != null ? depth0.plugin : depth0)) != null ? stack1.website : stack1), depth0))
-    + "\" target=\"_blank\" class=\"website-link\" title=\""
-    + alias2(alias3(((stack1 = (depth0 != null ? depth0.plugin : depth0)) != null ? stack1.title : stack1), depth0))
-    + " "
+    + "\" target=\"_blank\">"
     + alias2(alias3(((stack1 = (depths[2] != null ? depths[2].translations : depths[2])) != null ? stack1.installWizard_websiteLinkLabel : stack1), depth0))
-    + "\"></a>\n      </span>\n"
+    + "</a>\n      </span>\n"
     + ((stack1 = (helpers.hasDependencies || (depth0 && depth0.hasDependencies) || alias1).call(depth0,((stack1 = (depth0 != null ? depth0.plugin : depth0)) != null ? stack1.name : stack1),{"name":"hasDependencies","hash":{},"fn":this.program(9, data, 0, blockParams, depths),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "      <span class=\"description\">\n        "
     + ((stack1 = alias3(((stack1 = (depth0 != null ? depth0.plugin : depth0)) != null ? stack1.excerpt : stack1), depth0)) != null ? stack1 : "")
@@ -3466,21 +3455,17 @@ module.exports = HandlebarsCompiler.template({"1":function(depth0,helpers,partia
 },"9":function(depth0,helpers,partials,data,blockParams,depths) {
     var stack1, alias1=this.lambda, alias2=this.escapeExpression;
 
-  return "        <a href=\"#\" class=\"btn btn-link toggle-dependency-list\" type=\"button\" data-plugin-name=\""
+  return "      <a href=\"#\" class=\"btn btn-link toggle-dependency-list\" type=\"button\" data-plugin-name=\""
     + alias2(alias1(((stack1 = (depths[1] != null ? depths[1].plugin : depths[1])) != null ? stack1.name : stack1), depth0))
-    + "\" title=\""
-    + alias2(alias1(((stack1 = (depths[1] != null ? depths[1].plugin : depths[1])) != null ? stack1.title : stack1), depth0))
-    + " "
+    + "\">\n        "
     + alias2(alias1(((stack1 = (depths[3] != null ? depths[3].translations : depths[3])) != null ? stack1.installWizard_installIncomplete_dependenciesLabel : stack1), depth0))
-    + "\">\n          <span class=\"badge\">"
+    + "<span class=\"badge\">"
     + alias2((helpers.dependencyCount || (depth0 && depth0.dependencyCount) || helpers.helperMissing).call(depth0,((stack1 = (depths[1] != null ? depths[1].plugin : depths[1])) != null ? stack1.name : stack1),{"name":"dependencyCount","hash":{},"data":data}))
-    + "</span>\n        </a>\n";
+    + "</span>\n      </a>\n";
 },"11":function(depth0,helpers,partials,data,blockParams,depths) {
     var stack1;
 
-  return "        <div class=\"dep-list\">\n          <h3 class=\"dep-title\">"
-    + this.escapeExpression(this.lambda(((stack1 = (depths[3] != null ? depths[3].translations : depths[3])) != null ? stack1.installWizard_installIncomplete_dependenciesLabel : stack1), depth0))
-    + "</h3>\n"
+  return "        <div class=\"dep-list\">\n"
     + ((stack1 = (helpers.eachDependency || (depth0 && depth0.eachDependency) || helpers.helperMissing).call(depth0,((stack1 = (depths[1] != null ? depths[1].plugin : depths[1])) != null ? stack1.name : stack1),{"name":"eachDependency","hash":{},"fn":this.program(12, data, 0, blockParams, depths),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "        </div>\n";
 },"12":function(depth0,helpers,partials,data) {
@@ -3600,36 +3585,16 @@ module.exports = HandlebarsCompiler.template({"compiler":[6,">= 2.0.0-beta.1"],"
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('jenkins-handlebars-rt/runtimes/handlebars3_rt');
 module.exports = HandlebarsCompiler.template({"1":function(depth0,helpers,partials,data) {
-    var stack1;
-
-  return "		<h1>"
-    + this.escapeExpression(this.lambda(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_bannerRestart : stack1), depth0))
-    + "</h1>\n";
-},"3":function(depth0,helpers,partials,data) {
-    var stack1;
-
-  return "		<h1>"
-    + this.escapeExpression(this.lambda(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_banner : stack1), depth0))
-    + "</h1>\n";
-},"5":function(depth0,helpers,partials,data) {
-    var stack1;
-
-  return ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.restartSupported : depth0),{"name":"if","hash":{},"fn":this.program(6, data, 0),"inverse":this.program(8, data, 0),"data":data})) != null ? stack1 : "");
-},"6":function(depth0,helpers,partials,data) {
     var stack1, alias1=this.lambda, alias2=this.escapeExpression;
 
-  return "			<p>"
-    + alias2(alias1(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_installComplete_restartRequiredMessage : stack1), depth0))
-    + "</p>\n			<button type=\"button\" class=\"btn btn-primary install-done-restart\">\n				"
+  return "		<p>"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_message : stack1), depth0))
+    + " "
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_restartRequiredMessage : stack1), depth0))
+    + "</p>\n		<button type=\"button\" class=\"btn btn-primary install-done-restart\">\n			"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_restartLabel : stack1), depth0))
-    + "\n			</button>\n";
-},"8":function(depth0,helpers,partials,data) {
-    var stack1;
-
-  return "			<p>"
-    + this.escapeExpression(this.lambda(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_installComplete_restartRequiredNotSupportedMessage : stack1), depth0))
-    + "</p>\n";
-},"10":function(depth0,helpers,partials,data) {
+    + "\n		</button>\n";
+},"3":function(depth0,helpers,partials,data) {
     var stack1, alias1=this.lambda, alias2=this.escapeExpression;
 
   return "		<p>"
@@ -3638,16 +3603,16 @@ module.exports = HandlebarsCompiler.template({"1":function(depth0,helpers,partia
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_finishButtonLabel : stack1), depth0))
     + "\n		</button>\n";
 },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-    var stack1, helper;
+    var stack1, helper, alias1=this.lambda, alias2=this.escapeExpression;
 
   return "<div class=\"modal-header\">\n	<h4 class=\"modal-title\">"
-    + this.escapeExpression(this.lambda(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_title : stack1), depth0))
-    + "</h4>\n</div>\n<div class=\"modal-body\">\n	<div class=\"jumbotron welcome-panel success-panel\">\n"
-    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.restartRequired : depth0),{"name":"if","hash":{},"fn":this.program(1, data, 0),"inverse":this.program(3, data, 0),"data":data})) != null ? stack1 : "")
-    + "		\n		"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_title : stack1), depth0))
+    + "</h4>\n</div>\n<div class=\"modal-body\">\n	<div class=\"jumbotron welcome-panel success-panel\">\n		<h1>"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.translations : depth0)) != null ? stack1.installWizard_installComplete_banner : stack1), depth0))
+    + "</h1>\n		\n		"
     + ((stack1 = ((helper = (helper = helpers.message || (depth0 != null ? depth0.message : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"message","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "\n\n"
-    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.restartRequired : depth0),{"name":"if","hash":{},"fn":this.program(5, data, 0),"inverse":this.program(10, data, 0),"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.restartRequired : depth0),{"name":"if","hash":{},"fn":this.program(1, data, 0),"inverse":this.program(3, data, 0),"data":data})) != null ? stack1 : "")
     + "	</div>\n</div>\n";
 },"useData":true});
 
