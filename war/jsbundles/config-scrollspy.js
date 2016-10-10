@@ -1085,7 +1085,7 @@ function execCallback(callback, theWindow) {
             callback.call(callback, theWindow);                
         } catch (e) {
             console.log("Error invoking window-handle callback.");
-            console.log(e);
+            console.log(e.stack);
         }
     }
 }
@@ -1125,7 +1125,7 @@ exports.getWindow = function(callback, timeout) {
         }
         waitForWindow(callback);
 	} else {
-		throw "No 'window' available. Consider providing a 'callback' and receiving the 'window' async when available. Typically, this should only be the case in a test environment.";
+		throw new Error("No 'window' available. Consider providing a 'callback' and receiving the 'window' async when available. Typically, this should only be the case in a test environment.");
 	}
 }
 
