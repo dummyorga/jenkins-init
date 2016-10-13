@@ -1,0 +1,30 @@
+Started by user [8mha:AAAAmR+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAyeEgZe/dLi1CL9pIzUvNTsRAAvQgOewgAAAA==[0mBjörn Heneka
+Building in workspace /var/jenkins_home/workspace/testme-if-you-can
+ > git rev-parse --is-inside-work-tree # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git # timeout=10
+Fetching upstream changes from ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git
+ > git --version # timeout=10
+using GIT_SSH to set credentials diygitlabuser
+ > git -c core.askpass=true fetch --tags --progress ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git +refs/heads/*:refs/remotes/origin/*
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git rev-parse refs/remotes/origin/origin/master^{commit} # timeout=10
+Checking out Revision caf3b084c12dea9ffe89b7de0790422c8045868c (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f caf3b084c12dea9ffe89b7de0790422c8045868c
+ > git rev-list caf3b084c12dea9ffe89b7de0790422c8045868c # timeout=10
+[testme-if-you-can] $ /bin/sh -xe /tmp/hudson1032266949233605612.sh
++ echo Hello world
+Hello world
++ pwd
+/var/jenkins_home/workspace/testme-if-you-can
++ ls -al
+total 28
+drwxr-xr-x 5 root root 4096 Oct 13 05:50 .
+drwxr-xr-x 3 root root 4096 Oct 13 05:50 ..
+drwxr-xr-x 8 root root 4096 Oct 13 05:52 .git
+-rw-r--r-- 1 root root 2252 Oct 13 05:50 .gitignore
+-rw-r--r-- 1 root root  833 Oct 13 05:50 Capfile
+drwxr-xr-x 3 root root 4096 Oct 13 05:50 config
+drwxr-xr-x 3 root root 4096 Oct 13 05:50 lib
+Finished: SUCCESS

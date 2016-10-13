@@ -1,0 +1,25 @@
+Started by user [8mha:AAAAmR+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAyeEgZe/dLi1CL9pIzUvNTsRAAvQgOewgAAAA==[0mBjörn Heneka
+Building in workspace /var/jenkins_home/workspace/testme-if-you-can
+Cloning the remote Git repository
+Cloning repository ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git
+ > git init /var/jenkins_home/workspace/testme-if-you-can # timeout=10
+Fetching upstream changes from ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git
+ > git --version # timeout=10
+using GIT_SSH to set credentials diygitlabuser
+ > git -c core.askpass=true fetch --tags --progress ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git +refs/heads/*:refs/remotes/origin/*
+ > git config remote.origin.url ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git # timeout=10
+Fetching upstream changes from ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git
+using GIT_SSH to set credentials diygitlabuser
+ > git -c core.askpass=true fetch --tags --progress ssh://git@diygitlabbs01.infra.server.lan:10022/petsi/deploy-stages.git +refs/heads/*:refs/remotes/origin/*
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git rev-parse refs/remotes/origin/origin/master^{commit} # timeout=10
+Checking out Revision caf3b084c12dea9ffe89b7de0790422c8045868c (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f caf3b084c12dea9ffe89b7de0790422c8045868c
+First time build. Skipping changelog.
+[testme-if-you-can] $ /bin/sh -xe /tmp/hudson7309842261919645588.sh
++ echo Hello world
+Hello world
+Finished: SUCCESS
