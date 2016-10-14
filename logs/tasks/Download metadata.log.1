@@ -1,2 +1,14 @@
-Started at Thu Oct 13 05:48:04 UTC 2016
-Finished at Thu Oct 13 05:48:04 UTC 2016. 2ms
+Started at Thu Oct 13 06:56:41 UTC 2016
+Finished at Thu Oct 13 06:56:41 UTC 2016. 2ms
+Started at Fri Oct 14 06:56:41 UTC 2016
+FATAL: Server returned HTTP response code: 403 for URL: http://updates.jenkins-ci.org/update-center.json?id=default&version=2.19.1
+[8mha:AAAAWB+LCAAAAAAAAP9b85aBtbiIQSmjNKU4P08vOT+vOD8nVc8DzHWtSE4tKMnMz/PLL0ldFVf2c+b/lb5MDAwVRQxSaBqcITRIIQMEMIIUFgAAckCEiWAAAAA=[0mjava.io.IOException: Server returned HTTP response code: 403 for URL: http://updates.jenkins-ci.org/update-center.json?id=default&version=2.19.1
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1840)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1441)
+	at hudson.model.DownloadService.loadJSON(DownloadService.java:166)
+	at hudson.model.UpdateSite.updateDirectlyNow(UpdateSite.java:176)
+	at hudson.PluginManager.doCheckUpdatesServer(PluginManager.java:1619)
+	at jenkins.model.DownloadSettings$DailyCheck.execute(DownloadSettings.java:131)
+	at hudson.model.AsyncPeriodicWork$1.run(AsyncPeriodicWork.java:100)
+	at java.lang.Thread.run(Thread.java:745)
+Finished at Fri Oct 14 06:56:41 UTC 2016. 11ms
